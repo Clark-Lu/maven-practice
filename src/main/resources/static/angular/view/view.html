@@ -1,0 +1,7 @@
+<div>
+    <h1>This is angular's view！语法要求没有Thymeleaf那么严格！</h1>
+    <input type="text" placeholder="输入框" ng-model="params.keyword" />
+    <div ng-repeat="item in params.result">
+        <p style="border:1px solid grey;margin:2px 0px;">{{item}}</p>
+    </div>
+</div>
