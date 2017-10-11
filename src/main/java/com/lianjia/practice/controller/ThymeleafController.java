@@ -12,7 +12,6 @@ import java.util.Map;
  * Created by changlu on 10/10/17.
  */
 @Controller
-@RequestMapping("/*")
 public class ThymeleafController {
 
     @RequestMapping("/hello")

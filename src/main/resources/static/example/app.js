@@ -3,8 +3,7 @@
  */
 var app = angular.module("app",["ngRoute","angularFileUpload"]);
 
-app.config(function($routeProvider,$locationProvider){
-    $locationProvider.html5Mode(true);
+app.config(function($routeProvider){
     $routeProvider.when("/thymeleaf",{
         templateUrl:"/static/angular/view/view.html",
         controller:"angularCtrl"

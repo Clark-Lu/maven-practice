@@ -1,0 +1,10 @@
+使用angular的路由时默认是在现有请求路径后面加#/路由地址
+例如访问example时会在后面加#/路由地址
+如果想关闭此种显示方式，直接地址显示可以使用$locationProvider
+并设置$locationProvider.html5Mode(true)
+此时页面中需要加入<base href="/"/>
+可以分别访问
+localhost:8080/example
+和
+localhost:8080/bootstrap
+查看效果
