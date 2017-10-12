@@ -1,10 +1,17 @@
-使用angular的路由时默认是在现有请求路径后面加#/路由地址
-例如访问example时会在后面加#/路由地址
-如果想关闭此种显示方式，直接地址显示可以使用$locationProvider
-并设置$locationProvider.html5Mode(true)
-此时页面中需要加入<base href="/"/>
-可以分别访问
-localhost:8080/example
-和
-localhost:8080/bootstrap
-查看效果
+1、angular路由地址栏显示#
+    使用angular的路由时默认是在现有请求路径后面加#/路由地址
+    例如访问example时会在后面加#/路由地址
+    如果想关闭此种显示方式，直接地址显示可以使用$locationProvider
+    并设置$locationProvider.html5Mode(true)
+    此时页面中需要加入<base href="/"/>
+    可以分别访问
+    localhost:8080/example
+    和
+    localhost:8080/bootstrap
+    查看效果
+2、bootstrap自定义css样式
+    最简单的方法是自定义css文件，然后在bootstrap样式的引用之后引用自定义的css
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/static/commom/css/my-css.css" />
+    还有两种方式需要修改bootstrap
+3、IDEA引入maven项目时需要选择外部maven选项，在view里可以自定义IDEA的工具栏
