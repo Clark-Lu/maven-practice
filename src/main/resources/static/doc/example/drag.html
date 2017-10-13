@@ -12,15 +12,6 @@
     <link href="../asset/css/bootstrap-responsive.css" rel="stylesheet">
     <link href="../asset/css/zrenderHome.css" rel="stylesheet">
     <link rel="shortcut icon" href="../asset/ico/favicon.png">
-    <style>
-        .tools{
-            cursor: pointer;
-            height: 50px;
-            width: 50px;
-            border:1px dashed grey;
-            margin: 10px 0px;
-        }
-    </style>
 </head>
 
 <body>
@@ -29,13 +20,7 @@
 
     <div class="container">
         <div class="row">
-            <div id="tools"  class="span1 text-center">
-                <div id="circle" class="tools">开始</div>
-                <div id="polygon" class="tools">选择框</div>
-                <div id="rectangle" class="tools">工具框</div>
-                <div id="line" class="tools">连接线</div>
-            </div>
-            <div class="span10">
+            <div class="span12">
                 <div id="main" class="main" style="cursor: none !important"></div>
             </div>
         </div><!--/row-->
@@ -95,30 +80,26 @@
                 var brushX = width/2;
                 var brushY = height/2;
                 var circleRadio = 30;
-                document.getElementById('line').onclick = function(){changeBrush('line');};
-                document.getElementById('circle').onclick =function(){changeBrush('circle')};
-                document.getElementById('rectangle').onclick =function(){changeBrush('rectangle')};
-                document.getElementById('polygon').onclick =function(){changeBrush('polygon')};
-                function changeBrush(type){
+                var toolsGap = 60;
+                var tools = [];
+                function init(){
+                    brushX = toolsGap + circleRadio;
+                    brushY = toolsGap + circleRadio;
+                    createBrushByType('circle');
+                    tools.push(brush);
+                    brushY = brushY + toolsGap + circleRadio;
+                    createBrushByType('rectangle');
+                    brush.bind('click',function (e) {
+                        console.log(e);
+                    })
+                    tools.push(brush);
+                    brushY = brushY + toolsGap + circleRadio;
+                    createBrushByType('polygon');
+                    tools.push(brush);
+                }
+                init();
+                function createBrushByType(type){
                     switch(type){
-                        case 'line':
-                            brush = new LineShape({
-                                zlevel : 3, // 频繁变动的画笔单独在一层中
-                                style : {
-                                    xStart : brushX-circleRadio,
-                                    yStart : brushY,
-                                    xEnd : brushX+circleRadio,
-                                    yEnd : brushY,
-                                    brushType : 'both',
-                                    strokeColor : 'black',
-                                    lineWidth : 3
-                                },
-                                hoverable : false,
-                                draggable : true
-                            });
-                            zr.addShape(brush);
-                            zr.refresh();
-                            break;
                         case 'circle':
                             brush = new CircleShape({
                                 zlevel : 3, // 频繁变动的画笔单独在一层中
@@ -134,6 +115,7 @@
                                     lineWidth : 0
                                 },
                                 hoverable : false,
+                                clickable : true,
                                 draggable : true
                             });
                             zr.addShape(brush);
@@ -155,7 +137,8 @@
                                     lineWidth : 0
                                 },
                                 hoverable : false,
-                                draggable : true
+                                clickable : true,
+                                draggable : false
                             });
                             zr.addShape(brush);
                             zr.refresh();
@@ -172,7 +155,8 @@
                                     textPosition : 'inside'     // default top
                                 },
                                 hoverable : false,
-                                draggable : true
+                                clickable : true,
+                                draggable : false
                             });
                             zr.addShape(brush);
                             zr.refresh();
