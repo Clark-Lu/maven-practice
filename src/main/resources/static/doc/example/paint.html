@@ -1,0 +1,237 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>ZRender</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ZRender">
+    <meta name="author" content="kener.linfeng@gmail.com">
+
+    <script src="../asset/js/esl/esl.js"></script>
+    <link href="../asset/css/bootstrap.css" rel="stylesheet">
+    <link href="../asset/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="../asset/css/zrenderHome.css" rel="stylesheet">
+    <link rel="shortcut icon" href="../asset/ico/favicon.png">
+    <style>
+        .tools{
+            cursor: pointer;
+            height: 50px;
+            width: 50px;
+            border:1px dashed grey;
+            margin: 10px 0px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- NAVBAR
+    ================================================== -->
+
+    <div class="container">
+        <div class="row">
+            <div id="tools"  class="span1 text-center">
+                <div id="circle" class="tools">开始</div>
+                <div id="polygon" class="tools">选择框</div>
+                <div id="rectangle" class="tools">工具框</div>
+                <div id="line" class="tools">连接线</div>
+            </div>
+            <div class="span10">
+                <div id="main" class="main" style="cursor: none !important"></div>
+            </div>
+        </div><!--/row-->
+    </div><!--/.fluid-container-->
+
+    <script src="../asset/js/jquery.js"></script>
+    <script src="../asset/js/bootstrap-transition.js"></script>
+    <script src="../asset/js/bootstrap-alert.js"></script>
+    <script src="../asset/js/bootstrap-modal.js"></script>
+    <script src="../asset/js/bootstrap-dropdown.js"></script>
+    <script src="../asset/js/bootstrap-scrollspy.js"></script>
+    <script src="../asset/js/bootstrap-tab.js"></script>
+    <script src="../asset/js/bootstrap-tooltip.js"></script>
+    <script src="../asset/js/bootstrap-popover.js"></script>
+    <script src="../asset/js/bootstrap-button.js"></script>
+    <script src="../asset/js/bootstrap-collapse.js"></script>
+    <script src="../asset/js/bootstrap-carousel.js"></script>
+    <script src="../asset/js/bootstrap-typeahead.js"></script>
+    <script type="text/javascript">
+        var developMode = false;
+        if (developMode) {
+            // for develop
+            require.config({
+                packages: [
+                    {
+                        name: 'zrender',
+                        location: '../../src',
+                        main: 'zrender'
+                    }
+                ]
+            });
+        }
+        else {
+            // for echarts online home page
+            var fileLocation = './www/js/zrender';
+            require.config({
+                paths:{
+                    zrender: fileLocation,
+                    'zrender/shape/Circle': fileLocation,
+                    'zrender/shape/Rectangle': fileLocation,
+                    'zrender/shape/Ring': fileLocation,
+                    'zrender/shape/Polygon': fileLocation,
+                    'zrender/shape/Line': fileLocation
+                }
+            });
+        }
+
+        require(
+            ['zrender', 'zrender/shape/Circle', 'zrender/shape/Rectangle', 'zrender/shape/Ring', 'zrender/shape/Polygon','zrender/shape/Line'],
+            function(zrender, CircleShape, RectangleShape, RingShape, PolygonShape,LineShape) {
+                zr = zrender.init(document.getElementById('main'));
+                var colors = ['#0084dd', '#00aa66', '#00b2ff'];
+                var eventTool = require('zrender/tool/event');
+                var width = Math.ceil(zr.getWidth());
+                var height = Math.ceil(zr.getHeight());
+                var brush;
+                var brushX = width/2;
+                var brushY = height/2;
+                var circleRadio = 30;
+                document.getElementById('line').onclick = function(){changeBrush('line');};
+                document.getElementById('circle').onclick =function(){changeBrush('circle')};
+                document.getElementById('rectangle').onclick =function(){changeBrush('rectangle')};
+                document.getElementById('polygon').onclick =function(){changeBrush('polygon')};
+                function changeBrush(type){
+//                    if(brush!=null){
+//                        zr.delShape(brush.id);
+//                    }
+                    switch(type){
+                        case 'line':
+                            brush = new LineShape({
+                                zlevel : 3, // 频繁变动的画笔单独在一层中
+                                style : {
+                                    xStart : brushX-circleRadio,
+                                    yStart : brushY,
+                                    xEnd : brushX+circleRadio,
+                                    yEnd : brushY,
+                                    brushType : 'both',
+                                    strokeColor : 'black',
+                                    lineWidth : 3
+                                },
+                                hoverable : false,
+                                draggable : true
+                            });
+                            zr.addShape(brush);
+                            zr.on(
+                                    'mousemove',
+                                    function(params) {
+                                        brush.style.xStart = eventTool.getX(params.event)-circleRadio;
+                                        brush.style.yStart = eventTool.getY(params.event);
+                                        brush.style.xEnd = eventTool.getX(params.event)+circleRadio;
+                                        brush.style.yEnd = eventTool.getY(params.event);
+                                        brushX = eventTool.getX(params.event);
+                                        brushY = eventTool.getY(params.event);
+                                        zr.modShape(brush.id, brush);
+                                        zr.refresh();
+                                    }
+                            );
+                            zr.refresh();
+                            break;
+                        case 'circle':
+                            brush = new CircleShape({
+                                zlevel : 3, // 频繁变动的画笔单独在一层中
+                                style : {
+                                    x : brushX,
+                                    y : brushY,
+                                    r : circleRadio,
+                                    brushType : 'both',
+                                    strokeColor : 'blue',
+                                    color : colors[0],
+                                    text : '开始',
+                                    textPosition : 'inside',
+                                    lineWidth : 0
+                                },
+                                hoverable : false,
+                                draggable : true
+                            });
+                            zr.addShape(brush);
+                            zr.on(
+                                    'mousemove',
+                                    function(params) {
+                                        brush.style.x = eventTool.getX(params.event);
+                                        brush.style.y = eventTool.getY(params.event);
+                                        brushX = brush.style.x;
+                                        brushY = brush.style.y;
+                                        zr.modShape(brush.id, brush);
+                                        zr.refresh();
+                                    }
+                            );
+                            zr.refresh();
+                            break;
+                        case 'rectangle':
+                            brush = new RectangleShape({
+                                zlevel : 3, // 频繁变动的画笔单独在一层中
+                                style : {
+                                    x : brushX-circleRadio,
+                                    y : brushY-circleRadio,
+                                    width : 2*circleRadio,
+                                    height : 2*circleRadio,
+                                    brushType : 'both',
+                                    strokeColor : 'blue',
+                                    color : colors[2],
+                                    text : '工具框',
+                                    textPosition : 'inside',
+                                    lineWidth : 0
+                                },
+                                hoverable : false,
+                                draggable : true
+                            });
+                            zr.addShape(brush);
+                            zr.on(
+                                    'mousemove',
+                                    function(params) {
+                                        brush.style.x = eventTool.getX(params.event)-circleRadio;
+                                        brush.style.y = eventTool.getY(params.event)-circleRadio;
+                                        brushX = brush.style.x;
+                                        brushY = brush.style.y;
+                                        zr.modShape(brush.id, brush);
+                                        zr.refresh();
+                                    }
+                            );
+                            zr.refresh();
+                            break;
+                        case 'polygon':
+                            brush = new PolygonShape({
+                                style : {
+                                    pointList : [[brushX-circleRadio-20, brushY], [brushX, brushY+circleRadio], [brushX+circleRadio+20, brushY], [brushX, brushY-circleRadio]],
+                                    brushType : 'both',
+                                    color : colors[1],
+                                    strokeColor : 'red',
+                                    lineWidth : 0,
+                                    text : '分支',
+                                    textPosition : 'inside'     // default top
+                                },
+                                hoverable : false,
+                                draggable : true
+                            });
+                            zr.addShape(brush);
+                            zr.on(
+                                    'mousemove',
+                                    function(params) {
+                                        brushX = eventTool.getX(params.event);
+                                        brushY = eventTool.getY(params.event);
+                                        brush.style.pointList = [[brushX-circleRadio-20, brushY], [brushX, brushY+circleRadio], [brushX+circleRadio+20, brushY], [brushX, brushY-circleRadio]];
+                                        zr.modShape(brush.id, brush);
+                                        zr.refresh();
+                                    }
+                            );
+                            zr.refresh();
+                                console.log(brush.style);
+                            break;
+                        default :
+                            break;
+                    }
+                }
+            }
+        )
+    </script>
+</body>
+</html>
