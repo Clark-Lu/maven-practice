@@ -80,25 +80,32 @@
                 var brushX = width/2;
                 var brushY = height/2;
                 var circleRadio = 30;
-                var toolsGap = 60;
+                var circleD = 2*circleRadio
+                var toolsGap = 30;
                 var tools = [];
                 function init(){
-                    brushX = toolsGap + circleRadio;
-                    brushY = toolsGap + circleRadio;
-                    createBrushByType('circle');
+                    var toolX = toolsGap + circleRadio;
+                    var toolY = toolsGap + circleD;
+                    createBrush('circle',toolX,toolY);
                     tools.push(brush);
-                    brushY = brushY + toolsGap + circleRadio;
-                    createBrushByType('rectangle');
+                    toolY = toolY + toolsGap + circleD;
+                    createBrush('rectangle',toolX,toolY);
                     brush.bind('click',function (e) {
-                        console.log(e);
+                        createBrush('rectangle',brushX,brushY);
+                        brush.draggable = true;
                     })
                     tools.push(brush);
-                    brushY = brushY + toolsGap + circleRadio;
-                    createBrushByType('polygon');
+                    toolY = toolY + toolsGap + circleD;
+                    createBrush('polygon',toolX,toolY);
+                    brush.bind('click',function (e) {
+                        createBrush('polygon',brushX,brushY);
+                        brush.draggable = true;
+                    })
                     tools.push(brush);
                 }
                 init();
-                function createBrushByType(type){
+                //创建图形，默认为左侧工具栏的配置，在initBrush时可以根据类型对配置进行修改
+                function createBrush(type,brushX,brushY){
                     switch(type){
                         case 'circle':
                             brush = new CircleShape({
@@ -164,6 +171,9 @@
                         default :
                             break;
                     }
+                }
+                function initBrush(type){
+
                 }
             }
         )

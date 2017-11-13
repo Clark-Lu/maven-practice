@@ -95,6 +95,32 @@
                 var brushX = width/2;
                 var brushY = height/2;
                 var circleRadio = 30;
+                var circleD = 2*circleRadio;
+                var graphGap = 30;
+                var centerGap = graphGap + circleD;
+                var row = parseInt(height/circleD);
+                var col = parseInt(width/circleD);
+                var grid = new Array();
+                function initGrid(){
+                    for(var i=0;i < row;i++){
+                        grid[i] = new Array();
+                        for(var j=0;j<col;j++){
+                            grid[i][j] = [(j+1)*circleD,(i+1)*circleD];
+                            var dot =  new CircleShape({
+                                zlevel : 0,
+                                style : {
+                                    x : grid[i][j][0],
+                                    y : grid[i][j][1],
+                                    r : 3
+                                }
+                            });
+                            zr.addShape(dot);
+                            zr.refresh();
+                        }
+                    }
+                }
+                initGrid();
+                console.log(grid);
                 document.getElementById('line').onclick = function(){changeBrush('line');};
                 document.getElementById('circle').onclick =function(){changeBrush('circle')};
                 document.getElementById('rectangle').onclick =function(){changeBrush('rectangle')};
@@ -103,7 +129,7 @@
                     switch(type){
                         case 'line':
                             brush = new LineShape({
-                                zlevel : 3, // 频繁变动的画笔单独在一层中
+                                zlevel : 0, // 频繁变动的画笔单独在一层中
                                 style : {
                                     xStart : brushX-circleRadio,
                                     yStart : brushY,
@@ -155,13 +181,23 @@
                                     lineWidth : 0
                                 },
                                 hoverable : false,
-                                draggable : true
+                                draggable : true,
+                                clickable : true,
+                                ondragend : function(e){
+                                    var c = parseInt(eventTool.getX(e.event)/circleD);
+                                    var r = parseInt(eventTool.getY(e.event)/circleD);
+                                    e.target.position[0] = grid[r][c][0] - e.target.style.x - circleRadio;
+                                    e.target.position[1] = grid[r][c][1] - e.target.style.y - circleRadio;
+                                    zr.modShape(e.target.id, e.target);
+                                    zr.refresh();
+                                }
                             });
                             zr.addShape(brush);
                             zr.refresh();
                             break;
                         case 'polygon':
                             brush = new PolygonShape({
+                                zlevel : 3,
                                 style : {
                                     pointList : [[brushX-circleRadio-20, brushY], [brushX, brushY+circleRadio], [brushX+circleRadio+20, brushY], [brushX, brushY-circleRadio]],
                                     brushType : 'both',
