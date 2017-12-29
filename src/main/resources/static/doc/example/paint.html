@@ -33,7 +33,6 @@
                 <div id="circle" class="tools">开始</div>
                 <div id="polygon" class="tools">选择框</div>
                 <div id="rectangle" class="tools">工具框</div>
-                <div id="line" class="tools">连接线</div>
             </div>
             <div class="span10">
                 <div id="main" class="main" style="cursor: none !important"></div>
@@ -92,14 +91,13 @@
                 var width = Math.ceil(zr.getWidth());
                 var height = Math.ceil(zr.getHeight());
                 var brush;
-                var brushX = width/2;
-                var brushY = height/2;
                 var circleRadio = 30;
                 var circleD = 2*circleRadio;
                 var graphGap = 30;
                 var centerGap = graphGap + circleD;
                 var row = parseInt(height/circleD);
                 var col = parseInt(width/circleD);
+                var brushX,brushY;
                 var grid = new Array();
                 function initGrid(){
                     for(var i=0;i < row;i++){
@@ -111,17 +109,18 @@
                                 style : {
                                     x : grid[i][j][0],
                                     y : grid[i][j][1],
-                                    r : 3
+                                    r : 1,
+                                    color : 'grey'
                                 }
                             });
                             zr.addShape(dot);
                             zr.refresh();
                         }
                     }
+                    brushX = grid[0][0][0];
+                    brushY = grid[0][0][1];
                 }
                 initGrid();
-                console.log(grid);
-                document.getElementById('line').onclick = function(){changeBrush('line');};
                 document.getElementById('circle').onclick =function(){changeBrush('circle')};
                 document.getElementById('rectangle').onclick =function(){changeBrush('rectangle')};
                 document.getElementById('polygon').onclick =function(){changeBrush('polygon')};
@@ -160,7 +159,14 @@
                                     lineWidth : 0
                                 },
                                 hoverable : false,
-                                draggable : true
+                                draggable : true,
+                                ondragend : function(e){
+                                    var gridPoint = getGridPoint(e);
+                                    e.target.position[0] = gridPoint[0] - e.target.style.x;
+                                    e.target.position[1] = gridPoint[1] - e.target.style.y;
+                                    zr.modShape(e.target.id, e.target);
+                                    zr.refresh();
+                                }
                             });
                             zr.addShape(brush);
                             zr.refresh();
@@ -184,10 +190,9 @@
                                 draggable : true,
                                 clickable : true,
                                 ondragend : function(e){
-                                    var c = parseInt(eventTool.getX(e.event)/circleD);
-                                    var r = parseInt(eventTool.getY(e.event)/circleD);
-                                    e.target.position[0] = grid[r][c][0] - e.target.style.x - circleRadio;
-                                    e.target.position[1] = grid[r][c][1] - e.target.style.y - circleRadio;
+                                    var gridPoint = getGridPoint(e);
+                                    e.target.position[0] = gridPoint[0] - e.target.style.x - circleRadio;
+                                    e.target.position[1] = gridPoint[1] - e.target.style.y - circleRadio;
                                     zr.modShape(e.target.id, e.target);
                                     zr.refresh();
                                 }
@@ -208,7 +213,14 @@
                                     textPosition : 'inside'     // default top
                                 },
                                 hoverable : false,
-                                draggable : true
+                                draggable : true,
+                                ondragend : function(e){
+                                    var gridPoint = getGridPoint(e);
+                                    e.target.position[0] = gridPoint[0] - e.target.style.pointList[1][0];
+                                    e.target.position[1] = gridPoint[1] - e.target.style.pointList[0][1];
+                                    zr.modShape(e.target.id, e.target);
+                                    zr.refresh();
+                                }
                             });
                             zr.addShape(brush);
                             zr.refresh();
@@ -216,6 +228,23 @@
                         default :
                             break;
                     }
+                }
+                function getGridPoint(e){
+                    var c = Math.round(eventTool.getX(e.event)/circleD) - 1;
+                    var r = Math.round(eventTool.getY(e.event)/circleD) - 1;
+                    if(r >= row){
+                        r = row - 1;
+                    }
+                    if(c >= col){
+                        c = col - 1;
+                    }
+                    if(c < 0){
+                        c = 0;
+                    }
+                    if(r < 0){
+                        r = 0;
+                    }
+                    return [grid[r][c][0],grid[r][c][1]];
                 }
             }
         )

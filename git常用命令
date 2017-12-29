@@ -1,0 +1,32 @@
+git常用命令
+
+git checkout 本地分支名
+切换本地分支
+
+git checkout -b 本地分支名
+创建并切换到本地分支
+
+git push origin 本地分支名:远程分支名
+创建远程分支，并将本地分支推到远程分支
+
+git push origin :远程分支名
+删除远程分支
+
+git checkout -b 本地分支名 origin/远程分支名
+创建本地分支并拉取远程分支，并切换到本地分支
+用fetch的话不切换分支
+
+
+git push --set-upstream origin 远程分支名
+本地所在分支与远程分支建立默认关系
+
+git branch -vv
+查看本地分支与远程分支的对应关系
+
+git branch -D 本地分支名
+强制删除本地分支  非强制删除使用-d
+
+
+
+
+
